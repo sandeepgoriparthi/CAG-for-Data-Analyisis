@@ -1,0 +1,7 @@
+streamlit
+langchain-community
+openai
+pickle
+pandas
+plotly==5.11.0
+python-dotenv
