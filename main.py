@@ -1,10 +1,10 @@
-import streamlit as st
-import openai
-from langchain.llms import OpenAI
+import os
+import pickle
 import pandas as pd
+import streamlit as st
 import plotly.express as px
 from dotenv import load_dotenv
-import pickle
+from langchain_community.llms import OpenAI
 
 # Load API Key
 load_dotenv()
@@ -30,20 +30,13 @@ def save_cache(cache):
 # Streamlit UI
 st.title("Cache-Augmented AI Agent")
 
-# Query input
-user_query = st.text_input("Enter your query:")
-
-if st.button("Generate Response"):
-    cache = load_cache()
-    if user_query in cache:
-        st.write("Cached Response:")
-        st.write(cache[user_query])
-    else:
-        response = llm(user_query)
-        cache[user_query] = response
-        save_cache(cache)
-        st.write("New Response:")
-        st.write(response)
+# Main application logic
+cache = load_cache()
+response = llm.generate("Your prompt here")  # Replace with actual prompt
+cache["response"] = response
+save_cache(cache)
+st.write("New Response:")
+st.write(response)
 
 # Data analysis and visualization
 st.subheader("Upload CSV for Data Analysis")
@@ -55,5 +48,6 @@ if uploaded_file:
     # Visualization
     st.subheader("Data Visualization")
     column = st.selectbox("Select a column to visualize:", df.columns)
-    fig = px.histogram(df, x=column, title=f"Distribution of {column}")
-    st.plotly_chart(fig)
+    if column:  # Ensure a column is selected
+        fig = px.histogram(df, x=column, title=f"Distribution of {column}")
+        st.plotly_chart(fig)
